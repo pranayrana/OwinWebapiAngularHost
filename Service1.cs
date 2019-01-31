@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
@@ -20,6 +21,8 @@ namespace WebApiHost
 
         protected override void OnStart(string[] args)
         {
+            if (ConfigurationManager.AppSettings["baseAddress"] != null)
+                baseAddress = ConfigurationManager.AppSettings["baseAddress"].ToString();
             server = WebApp.Start<OwinStartUp>(baseAddress);
         }
 

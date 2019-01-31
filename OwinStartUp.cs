@@ -11,10 +11,18 @@ namespace WebApiHost
         public void Configuration(IAppBuilder appBuilder)
         {
 
-            appBuilder.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
+            //hosting static files i.e. angular
+            //install-package Microsoft.Owin.SelfHost
+            //install-package Microsoft.Owin.StaticFiles
+            var options = new FileServerOptions();
+            options.EnableDirectoryBrowsing = true;
+            options.FileSystem = new PhysicalFileSystem("./app");
+            options.StaticFileOptions.ServeUnknownFileTypes = true;
+            appBuilder.UseFileServer(options);
+
 
             // Configure Web API for self-host.
-
+            //Install-Package Microsoft.AspNet.WebApi.OwinSelfHost
             HttpConfiguration config = new HttpConfiguration();
             config.Formatters.Remove(config.Formatters.XmlFormatter);
 
@@ -26,18 +34,10 @@ namespace WebApiHost
 
             config.MapHttpAttributeRoutes();
             appBuilder.UseWebApi(config);
+            
 
-
-
-            //hosting static files i.e. angular
-            var options = new FileServerOptions();
-            options.EnableDirectoryBrowsing = true;
-            options.FileSystem = new PhysicalFileSystem("./app");
-            options.StaticFileOptions.ServeUnknownFileTypes = true;
-            //RequestPath = new PathString(string.Empty),
-            appBuilder.UseFileServer(options);
-            appBuilder.UseStageMarker(PipelineStage.MapHandler);
-
+            //Install-Package Microsoft.Owin.Cors
+            appBuilder.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
         }
     }
 }
